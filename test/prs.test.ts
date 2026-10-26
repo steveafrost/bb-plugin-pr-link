@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { prUrl, conversationTexts, findPrRefs, latestPrs, mergePrs, prLabel } from "../prs.ts";
+import { prHost, prUrl, conversationTexts, findPrRefs, latestPrs, mergePrs, prLabel } from "../prs.ts";
 
 const labels = (text: string) => findPrRefs(text).map(prLabel);
 
@@ -28,8 +28,22 @@ test("mergePrs keeps earlier PRs after fresh ones", () => {
   assert.deepEqual(merged.map(prLabel), ["a/b#2", "a/b#1"]);
 });
 
-test("prUrl", () => {
-  assert.equal(prUrl({ owner: "shop", repo: "world", number: 5 }), "https://delta.shopify.io/shop/world/pull/5");
+test("prUrl links each PR to its host", () => {
+  assert.equal(prUrl({ owner: "shop", repo: "world", number: 2309326 }), "https://delta.shopify.io/shop/world/pull/2309326");
+  assert.equal(prUrl({ owner: "Shop", repo: "World", number: 2151771 }), "https://delta.shopify.io/Shop/World/pull/2151771");
+  assert.equal(prUrl({ owner: "shop", repo: "world", number: 512 }), "https://github.com/shop/world/pull/512");
+  assert.equal(prUrl({ owner: "steveafrost", repo: "bb-plugin-radar", number: 24 }), "https://github.com/steveafrost/bb-plugin-radar/pull/24");
+});
+
+test("prHost: mention source vs repo", () => {
+  const [github, byor, delta] = findPrRefs(
+    "https://github.com/shop/world/pull/2261375 https://byor.quick.shopify.io/repos/shopify-playground/tributary/pulls/22 https://delta.shopify.io/acme/app/pull/3",
+  );
+  assert.equal(prHost(github!), "delta", "shop/world >= 2,000,000 is on Delta even when linked via GitHub");
+  assert.equal(prHost(byor!), "github");
+  assert.equal(prHost(delta!), "delta", "a Delta URL proves the repo is on Delta");
+  const [later] = latestPrs(["https://delta.shopify.io/acme/app/pull/3", "then acme/app#3"]);
+  assert.equal(prHost(later!), "delta", "a later bare mention keeps the Delta host");
 });
 
 test("conversationTexts walks nested rows and skips work rows", () => {

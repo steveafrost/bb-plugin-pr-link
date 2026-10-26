@@ -7,7 +7,7 @@ import {
   useSdk,
   type PluginThreadHeaderActionProps,
 } from "@get-bb/plugin-sdk/app";
-import { prUrl, conversationTexts, latestPrs, mergePrs, prLabel, type PrRef } from "./prs";
+import { hostName, prHost, prUrl, conversationTexts, latestPrs, mergePrs, prLabel, type PrRef } from "./prs";
 import "./app.css";
 
 /**
@@ -87,7 +87,7 @@ function PrLinkAction({ threadId }: PluginThreadHeaderActionProps) {
   const icon = <Icon name="GitPullRequest" fallback="GitBranch" className="pr-link-icon" aria-hidden />;
 
   if (prs.length === 1) {
-    const label = `Open ${prLabel(latest)}`;
+    const label = `Open ${prLabel(latest)} on ${hostName(prHost(latest))}`;
     return (
       <UrlLink href={prUrl(latest)} className="pr-link-button" aria-label={label} title={label}>
         {icon}
@@ -126,6 +126,7 @@ function PrLinkAction({ threadId }: PluginThreadHeaderActionProps) {
               key={prLabel(pr).toLowerCase()}
               role="menuitem"
               href={prUrl(pr)}
+              title={`Open on ${hostName(prHost(pr))}`}
               className="pr-link-item"
               onClick={() => setOpen(false)}
             >

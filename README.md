@@ -1,6 +1,9 @@
 # PR Link
 
-A [bb](https://getbb.app) plugin. When a pull request is mentioned in a thread's chat, a PR icon appears in the thread header and opens it on [Delta](https://delta.shopify.io/) (`delta.shopify.io/<owner>/<repo>/pull/<n>`). Delta's PR router then sends you to whichever review site you prefer.
+A [bb](https://getbb.app) plugin. When a pull request is mentioned in a thread's chat, a PR icon appears in the thread header and opens it where it lives:
+
+- **Delta** for shop/world (PR 2,000,000 and up) and any PR mentioned by a `delta.shopify.io` URL: `https://delta.shopify.io/<owner>/<repo>/pull/<n>`. Delta's PR router then sends you to whichever review site you prefer.
+- **GitHub** for everything else: `https://github.com/<owner>/<repo>/pull/<n>`.
 
 - One PR: the icon links straight to it.
 - Several PRs: the icon shows a count and opens a menu, most recently mentioned first.
