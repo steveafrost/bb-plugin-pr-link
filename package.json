@@ -1,0 +1,33 @@
+{
+  "name": "bb-plugin-pr-link",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Shows a pull request icon in the thread header when a PR is mentioned in chat, linking to it on BYOR.",
+  "engines": {
+    "bb": ">=0.47",
+    "bbPluginSdk": ">=0.6.75"
+  },
+  "bb": {
+    "name": "PR Link",
+    "description": "When a pull request is mentioned in a thread's chat, shows a PR icon in the thread header that opens it on byor.quick.shopify.io.",
+    "branding": {
+      "icon": "GitPullRequest"
+    },
+    "server": "./server.ts",
+    "app": "./app.tsx"
+  },
+  "scripts": {
+    "build": "bb plugin build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types test/*.test.ts"
+  },
+  "devDependencies": {
+    "@get-bb/plugin-sdk": "0.6.75",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.7.0",
+    "zod": "^4.6.5"
+  },
+  "license": "MIT"
+}
