@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "Shows a pull request icon in the thread header when a PR is mentioned in chat, linking to it on BYOR.",
+  "description": "Shows a pull request icon in the thread header when a PR is mentioned in chat, linking to it on Delta.",
   "engines": {
     "bb": ">=0.47",
     "bbPluginSdk": ">=0.6.75"
   },
   "bb": {
     "name": "PR Link",
-    "description": "When a pull request is mentioned in a thread's chat, shows a PR icon in the thread header that opens it on byor.quick.shopify.io.",
+    "description": "When a pull request is mentioned in a thread's chat, shows a PR icon in the thread header that opens it on delta.shopify.io.",
     "branding": {
       "icon": "GitPullRequest"
     },

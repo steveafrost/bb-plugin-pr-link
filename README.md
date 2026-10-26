@@ -1,6 +1,6 @@
 # PR Link
 
-A [bb](https://getbb.app) plugin. When a pull request is mentioned in a thread's chat, a PR icon appears in the thread header and opens that PR on [BYOR](https://byor.quick.shopify.io).
+A [bb](https://getbb.app) plugin. When a pull request is mentioned in a thread's chat, a PR icon appears in the thread header and opens it on [Delta](https://delta.shopify.io/) (`delta.shopify.io/<owner>/<repo>/pull/<n>`). Delta's PR router then sends you to whichever review site you prefer.
 
 - One PR: the icon links straight to it.
 - Several PRs: the icon shows a count and opens a menu, most recently mentioned first.

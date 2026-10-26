@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byorUrl, conversationTexts, findPrRefs, latestPrs, mergePrs, prLabel } from "../prs.ts";
+import { prUrl, conversationTexts, findPrRefs, latestPrs, mergePrs, prLabel } from "../prs.ts";
 
 const labels = (text: string) => findPrRefs(text).map(prLabel);
 
@@ -28,8 +28,8 @@ test("mergePrs keeps earlier PRs after fresh ones", () => {
   assert.deepEqual(merged.map(prLabel), ["a/b#2", "a/b#1"]);
 });
 
-test("byorUrl", () => {
-  assert.equal(byorUrl({ owner: "shop", repo: "world", number: 5 }), "https://byor.quick.shopify.io/repos/shop/world/pulls/5");
+test("prUrl", () => {
+  assert.equal(prUrl({ owner: "shop", repo: "world", number: 5 }), "https://delta.shopify.io/shop/world/pull/5");
 });
 
 test("conversationTexts walks nested rows and skips work rows", () => {

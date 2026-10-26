@@ -55,8 +55,9 @@ export function mergePrs(fresh: readonly PrRef[], earlier: readonly PrRef[]): Pr
 
 export const prLabel = (ref: PrRef) => `${ref.owner}/${ref.repo}#${ref.number}`;
 
-export const byorUrl = (ref: PrRef) =>
-  `https://byor.quick.shopify.io/repos/${encodeURIComponent(ref.owner)}/${encodeURIComponent(ref.repo)}/pulls/${ref.number}`;
+/** Delta's canonical PR link; Delta's PR router sends people to the review UI they prefer. */
+export const prUrl = (ref: PrRef) =>
+  `https://delta.shopify.io/${encodeURIComponent(ref.owner)}/${encodeURIComponent(ref.repo)}/pull/${ref.number}`;
 
 /**
  * Text of every chat message in a timeline response, oldest first. Walks nested
