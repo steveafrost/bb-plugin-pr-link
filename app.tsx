@@ -40,10 +40,31 @@ function useMentionedPrs(threadId: string): PrRef[] {
   return prs;
 }
 
+/** Gap between the header's bottom edge and the caret tip. */
+const HEADER_GAP = 6;
+/** Caret height: the rotated square's half-diagonal. */
+const CARET = 7;
+
+/**
+ * Where the menu sits relative to its button: below the whole title bar (not
+ * just the button), with the caret centered under the icon.
+ */
+function menuPlacement(button: HTMLElement | null): { top: number; caretRight: number } | null {
+  if (button === null) return null;
+  const rect = button.getBoundingClientRect();
+  const headerBottom = button.closest("header")?.getBoundingClientRect().bottom ?? rect.bottom;
+  return {
+    top: Math.max(headerBottom, rect.bottom) - rect.top + HEADER_GAP + CARET,
+    caretRight: rect.width / 2,
+  };
+}
+
 function PrLinkAction({ threadId }: PluginThreadHeaderActionProps) {
   const prs = useMentionedPrs(threadId);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [placement, setPlacement] = useState<{ top: number; caretRight: number } | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -84,13 +105,22 @@ function PrLinkAction({ threadId }: PluginThreadHeaderActionProps) {
         title={label}
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        ref={buttonRef}
+        onClick={() => {
+          if (!open) setPlacement(menuPlacement(buttonRef.current));
+          setOpen((value) => !value);
+        }}
       >
         {icon}
         <span className="pr-link-count">{prs.length}</span>
       </button>
       {open ? (
-        <div role="menu" className="pr-link-menu">
+        <div
+          role="menu"
+          className="pr-link-menu"
+          style={placement === null ? undefined : { top: placement.top, ["--pr-link-caret-right" as string]: `${placement.caretRight}px` }}
+        >
+          <div className="pr-link-menu-items">
           {prs.map((pr) => (
             <UrlLink
               key={prLabel(pr).toLowerCase()}
@@ -103,6 +133,7 @@ function PrLinkAction({ threadId }: PluginThreadHeaderActionProps) {
               <span className="pr-link-item-label">{prLabel(pr)}</span>
             </UrlLink>
           ))}
+          </div>
         </div>
       ) : null}
     </div>
