@@ -22,6 +22,12 @@ const PATTERN = new RegExp(
   "g",
 );
 
+// Example text in docs and chat ("owner/repo#123"), not a real PR.
+const PLACEHOLDER_OWNERS = new Set(["owner", "org", "organization", "user", "username", "your-org", "your-name", "you", "example", "foo"]);
+const PLACEHOLDER_REPOS = new Set(["repo", "repository", "your-repo", "example", "bar"]);
+const isPlaceholder = (owner: string, repo: string) =>
+  PLACEHOLDER_OWNERS.has(owner.toLowerCase()) || PLACEHOLDER_REPOS.has(repo.toLowerCase());
+
 const keyOf = (ref: PrRef) => `${ref.owner}/${ref.repo}#${ref.number}`.toLowerCase();
 
 /** Every PR named in `text`, in order of appearance (duplicates kept). */
@@ -33,6 +39,7 @@ export function findPrRefs(text: string): PrRef[] {
     if (start < 0) continue;
     const [owner, repo, digits] = groups.slice(start, start + 3) as [string, string, string];
     const number = Number(digits);
+    if (isPlaceholder(owner, repo)) continue;
     if (owner.includes("..") || repo.includes("..") || !Number.isSafeInteger(number) || number <= 0) continue;
     const ref: PrRef = { owner, repo: repo.replace(/\.git$/i, ""), number };
     if (start / 3 === DELTA_ALTERNATIVE) ref.onDelta = true;

@@ -18,6 +18,11 @@ test("ignores issues, non-PR paths and URL fragments", () => {
   assert.deepEqual(labels("~/src/a/b#3"), []);
 });
 
+test("ignores placeholder repos like owner/repo#123", () => {
+  assert.deepEqual(labels("e.g. owner/repo#123, org/my-app#4, foo/bar#5, https://github.com/your-org/repo/pull/6"), []);
+  assert.deepEqual(labels("owner/repo#1 and shop/world#2"), ["shop/world#2"]);
+});
+
 test("latestPrs orders by most recent mention and dedupes case-insensitively", () => {
   const prs = latestPrs(["shop/world#1 then shop/world#2", "Shop/World#1 again"]);
   assert.deepEqual(prs.map(prLabel), ["Shop/World#1", "shop/world#2"]);
