@@ -26,7 +26,10 @@ const PATTERN = new RegExp(
 const PLACEHOLDER_OWNERS = new Set(["owner", "org", "organization", "user", "username", "your-org", "your-name", "you", "example", "foo"]);
 const PLACEHOLDER_REPOS = new Set(["repo", "repository", "your-repo", "example", "bar"]);
 const isPlaceholder = (owner: string, repo: string) =>
-  PLACEHOLDER_OWNERS.has(owner.toLowerCase()) || PLACEHOLDER_REPOS.has(repo.toLowerCase());
+  PLACEHOLDER_OWNERS.has(owner.toLowerCase()) ||
+  PLACEHOLDER_REPOS.has(repo.toLowerCase()) ||
+  // "x/y#1", "a/b#2": single-letter stand-ins
+  (owner.length === 1 && repo.length === 1);
 
 const keyOf = (ref: PrRef) => `${ref.owner}/${ref.repo}#${ref.number}`.toLowerCase();
 

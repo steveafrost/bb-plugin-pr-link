@@ -21,6 +21,7 @@ test("ignores issues, non-PR paths and URL fragments", () => {
 test("ignores placeholder repos like owner/repo#123", () => {
   assert.deepEqual(labels("e.g. owner/repo#123, org/my-app#4, foo/bar#5, https://github.com/your-org/repo/pull/6"), []);
   assert.deepEqual(labels("owner/repo#1 and shop/world#2"), ["shop/world#2"]);
+  assert.deepEqual(labels("x/y#1 or a/b#2, but go/x#3"), ["go/x#3"]);
 });
 
 test("latestPrs orders by most recent mention and dedupes case-insensitively", () => {
@@ -29,8 +30,8 @@ test("latestPrs orders by most recent mention and dedupes case-insensitively", (
 });
 
 test("mergePrs keeps earlier PRs after fresh ones", () => {
-  const merged = mergePrs(findPrRefs("a/b#2"), findPrRefs("a/b#1 a/b#2"));
-  assert.deepEqual(merged.map(prLabel), ["a/b#2", "a/b#1"]);
+  const merged = mergePrs(findPrRefs("acme/app#2"), findPrRefs("acme/app#1 acme/app#2"));
+  assert.deepEqual(merged.map(prLabel), ["acme/app#2", "acme/app#1"]);
 });
 
 test("prUrl links each PR to its host", () => {
@@ -49,6 +50,19 @@ test("prHost: mention source vs repo", () => {
   assert.equal(prHost(delta!), "delta", "a Delta URL proves the repo is on Delta");
   const [later] = latestPrs(["https://delta.shopify.io/acme/app/pull/3", "then acme/app#3"]);
   assert.equal(prHost(later!), "delta", "a later bare mention keeps the Delta host");
+});
+
+test("GitHub-only repos open on GitHub however they're mentioned", () => {
+  // Mentions from thr_bje2c6f69y, which used to link to BYOR/Delta and fail to load.
+  const prs = latestPrs([
+    "opened [bb-marketplace#132](https://github.com/shopify-playground/bb-marketplace/pull/132)",
+    "BYOR: `https://byor.quick.shopify.io/repos/shopify-playground/bb-marketplace/pulls/132`",
+    "shopify-playground/bb-marketplace#209 is open",
+  ]);
+  assert.deepEqual(prs.map(prUrl), [
+    "https://github.com/shopify-playground/bb-marketplace/pull/209",
+    "https://github.com/shopify-playground/bb-marketplace/pull/132",
+  ]);
 });
 
 test("conversationTexts walks nested rows and skips work rows", () => {
