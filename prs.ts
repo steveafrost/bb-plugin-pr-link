@@ -65,10 +65,16 @@ export function latestPrs(texts: readonly string[]): PrRef[] {
   return [...byKey.values()].reverse();
 }
 
-/** Merge fresh results over earlier ones so a PR scrolled out of the fetched window stays listed. */
+/** Merge fresh results over earlier ones, retaining PRs and Delta routing evidence from prior windows. */
 export function mergePrs(fresh: readonly PrRef[], earlier: readonly PrRef[]): PrRef[] {
-  const seen = new Set(fresh.map(keyOf));
-  return [...fresh, ...earlier.filter((ref) => !seen.has(keyOf(ref)))];
+  const earlierDelta = new Set(earlier.filter((ref) => ref.onDelta).map(keyOf));
+  const seen = new Set<string>();
+  const merged = fresh.map((ref) => {
+    const key = keyOf(ref);
+    seen.add(key);
+    return !ref.onDelta && earlierDelta.has(key) ? { ...ref, onDelta: true } : ref;
+  });
+  return [...merged, ...earlier.filter((ref) => !seen.has(keyOf(ref)))];
 }
 
 export const prLabel = (ref: PrRef) => `${ref.owner}/${ref.repo}#${ref.number}`;

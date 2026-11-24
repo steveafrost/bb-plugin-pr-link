@@ -34,6 +34,30 @@ test("mergePrs keeps earlier PRs after fresh ones", () => {
   assert.deepEqual(merged.map(prLabel), ["acme/app#2", "acme/app#1"]);
 });
 
+test("mergePrs keeps Delta routing across windows without changing fresh order or casing", () => {
+  const earlier = latestPrs(["acme/app#1", "https://delta.shopify.io/acme/app/pull/3"]);
+  const fresh = latestPrs(["acme/app#3", "acme/app#4 and acme/other#3", "Acme/App#3 again"]);
+
+  assert.deepEqual(mergePrs(fresh, earlier).map(prUrl), [
+    "https://delta.shopify.io/Acme/App/pull/3",
+    "https://github.com/acme/other/pull/3",
+    "https://github.com/acme/app/pull/4",
+    "https://github.com/acme/app/pull/1",
+  ]);
+});
+
+test("mergePrs retains Delta routing through repeated refreshes", () => {
+  const earlier = latestPrs(["https://delta.shopify.io/acme/app/pull/3"]);
+  const first = mergePrs(latestPrs(["acme/app#3"]), earlier);
+  const second = mergePrs(latestPrs(["acme/app#4"]), first);
+  const third = mergePrs(latestPrs(["acme/app#3"]), second);
+
+  assert.deepEqual(third.map(prUrl), [
+    "https://delta.shopify.io/acme/app/pull/3",
+    "https://github.com/acme/app/pull/4",
+  ]);
+});
+
 test("prUrl links each PR to its host", () => {
   assert.equal(prUrl({ owner: "shop", repo: "world", number: 2309326 }), "https://delta.shopify.io/shop/world/pull/2309326");
   assert.equal(prUrl({ owner: "Shop", repo: "World", number: 2151771 }), "https://delta.shopify.io/Shop/World/pull/2151771");
